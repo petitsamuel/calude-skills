@@ -12,8 +12,8 @@ Three specialized plugins, each solving a distinct problem:
 
 ## Documentation
 
-- **[THREE_PLUGINS_DESIGN.md](./THREE_PLUGINS_DESIGN.md)** - Complete architectural specification
-- **[IMPLEMENTATION_PROMPT.md](./IMPLEMENTATION_PROMPT.md)** - Implementation guide
+- **[ARCHITECTURE.md](./ARCHITECTURE.md)** - Complete architectural design and specifications
+- **[NAMING_CONVENTIONS.md](./NAMING_CONVENTIONS.md)** - Contributing guidelines and naming standards
 - Plugin-specific README in each directory
 
 ## Quick Start
@@ -22,7 +22,7 @@ Three specialized plugins, each solving a distinct problem:
 ```bash
 /audit                    # Full audit
 /audit security          # Security only
-/audit-report --output=audit.md
+/audit-report            # Outputs to ./audit-report.md (default)
 ```
 
 ### Prompt Automation
@@ -53,11 +53,17 @@ Add to Claude Code settings:
 
 ## Testing
 
-Run validation tests:
+Run validation tests to verify plugin structure:
 ```bash
 chmod +x test-plugins.sh
 ./test-plugins.sh
 ```
+
+The script validates:
+- Directory structure (agents, commands, skills, hooks)
+- JSON validity (plugin.json, hooks.json)
+- Frontmatter presence in agent files
+- SKILL.md files in skill directories
 
 ## Requirements
 

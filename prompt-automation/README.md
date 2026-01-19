@@ -8,7 +8,7 @@ Ralph Loop automation with intelligent task design, prompt engineering, and comp
 /ralph-task-design "<description>"  # Start design phase (asks clarifying questions)
 /ralph-task-refine --add|--remove|--change "<text>"  # Modify design
 /ralph-task-approve                 # Lock design, generate prompt
-/ralph-task-execute [--max-iterations=N]  # Start Ralph Loop (default: 20)
+/ralph-task-execute [--max-iterations=N]  # Start Ralph Loop (default: 25)
 /ralph-task-status                  # Show progress and validation status
 /ralph-task-cancel [--save-progress]  # Stop loop gracefully
 ```
