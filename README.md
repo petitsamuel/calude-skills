@@ -301,7 +301,7 @@ Contributions are welcome! Please follow:
 ```bash
 # Clone the repository
 git clone https://github.com/petitsamuel/calude-skills.git
-cd claude-plugins
+cd calude-skills
 
 # Make your changes
 
@@ -337,4 +337,4 @@ MIT License - See [LICENSE](./LICENSE) file for details
 
 ---
 
-**Built for the Claude Code community**
+## Built for the Claude Code community
