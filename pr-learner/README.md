@@ -177,7 +177,7 @@ Analyzes pattern trends over time to identify emerging issues and improvements.
 
 ```bash
 # Clone the repository
-git clone https://github.com/YOUR_USERNAME/claude-plugins.git ~/.claude/plugins/claude-plugins
+git clone https://github.com/petitsamuel/calude-skills.git ~/.claude/plugins/claude-plugins
 
 # Add to your Claude Code settings (~/.claude/settings.json)
 {
@@ -191,7 +191,7 @@ git clone https://github.com/YOUR_USERNAME/claude-plugins.git ~/.claude/plugins/
 
 ```bash
 # Clone anywhere
-git clone https://github.com/YOUR_USERNAME/claude-plugins.git ~/dev/claude-plugins
+git clone https://github.com/petitsamuel/calude-skills.git ~/dev/claude-plugins
 
 # Create symlink
 ln -s ~/dev/claude-plugins/pr-learner ~/.claude/plugins/pr-learner
