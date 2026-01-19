@@ -1,0 +1,10 @@
+{
+  "name": "prompt-automation",
+  "version": "1.0.0",
+  "description": "Ralph Loop automation with intelligent prompt engineering",
+  "keywords": ["ralph-loop", "automation", "prompt", "iteration"],
+  "commands": "./commands/",
+  "agents": "./agents/",
+  "skills": "./skills/",
+  "hooks": "./hooks/hooks.json"
+}

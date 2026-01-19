@@ -1,0 +1,14 @@
+{
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "prompt",
+            "prompt": "When performing audits, always provide specific code examples and actionable remediation steps."
+          }
+        ]
+      }
+    ]
+  }
+}

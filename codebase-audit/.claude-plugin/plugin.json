@@ -1,0 +1,10 @@
+{
+  "name": "codebase-audit",
+  "version": "1.0.0",
+  "description": "Multi-dimensional codebase analysis using specialized sub-agents",
+  "keywords": ["audit", "security", "quality", "performance", "testing"],
+  "commands": "./commands/",
+  "agents": "./agents/",
+  "skills": "./skills/",
+  "hooks": "./hooks/hooks.json"
+}

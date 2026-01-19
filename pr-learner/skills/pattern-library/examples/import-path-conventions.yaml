@@ -1,0 +1,127 @@
+pattern_id: import_path_conventions
+category: code_quality
+severity: medium
+frequency: common
+
+description: |
+  Import paths are frequently corrected from relative to absolute paths using
+  project path aliases (e.g., @/ or ~/). This causes review iterations and
+  inconsistency across the codebase.
+
+indicators:
+  - Multiple files with relative imports changed to absolute
+  - Review comments like "Use absolute imports" or "Import from @/"
+  - Import statement changes in PR diff
+  - Inconsistent import styles within same file
+
+root_causes:
+  - Import path conventions not documented in CLAUDE.md
+  - No ESLint rule enforcing absolute imports
+  - Mixed examples in existing codebase
+  - Path aliases not configured or unclear
+  - New team members unaware of conventions
+
+solutions:
+  claude_md:
+    section: Code Conventions
+    content: |
+      ## Import Paths
+
+      Always use absolute imports with path aliases instead of relative paths:
+
+      ```typescript
+      // ✅ Good: Absolute imports with alias
+      import { User } from '@/models/User';
+      import { formatDate } from '@/utils/date';
+
+      // ❌ Bad: Relative imports
+      import { User } from '../../../models/User';
+      import { formatDate } from '../../utils/date';
+      ```
+
+      **Exceptions:** Relative imports OK for files in same directory:
+      ```typescript
+      // ✅ OK: Same directory
+      import { helper } from './helper';
+      ```
+
+  tooling:
+    - name: ESLint rule
+      config: |
+        {
+          "rules": {
+            "no-restricted-imports": ["error", {
+              "patterns": ["../*", "../../*", "../../../*"]
+            }]
+          }
+        }
+
+    - name: Path aliases
+      config: |
+        // tsconfig.json
+        {
+          "compilerOptions": {
+            "baseUrl": ".",
+            "paths": {
+              "@/*": ["src/*"]
+            }
+          }
+        }
+
+  skill_opportunity:
+    name: import-path-fixer
+    description: Automatically convert relative to absolute imports
+    command: /fix-imports [path]
+
+prevention:
+  - Document import conventions in onboarding
+  - Configure path aliases in project template
+  - Add ESLint rule to enforce
+  - Include in PR review checklist
+  - Show examples in README
+
+examples:
+  - pr_number: 123
+    pr_url: https://github.com/user/repo/pull/123
+    files_affected: [auth.ts, user.ts, api.ts]
+    changes:
+      - file: src/pages/auth.ts
+        before: import { User } from '../../../models/User'
+        after: import { User } from '@/models/User'
+      - file: src/components/user.ts
+        before: import { api } from '../../services/api'
+        after: import { api } from '@/services/api'
+
+  - pr_number: 145
+    pr_url: https://github.com/user/repo/pull/145
+    files_affected: [dashboard.tsx, nav.tsx]
+    review_comment: "Please use @ imports throughout"
+
+  - pr_number: 167
+    pr_url: https://github.com/user/repo/pull/167
+    files_affected: [config.ts]
+    changes:
+      - file: src/config.ts
+        before: import { env } from '../utils/env'
+        after: import { env } from '@/utils/env'
+
+impact:
+  frequency_score: 0.75  # Found in 6 of 10 PRs
+  severity_score: 0.50   # Medium severity
+  fix_cost_score: 0.20   # Low cost (documentation + tooling)
+  trend_score: 0.10      # Stable occurrence
+  total_impact: 0.69     # High-medium priority
+
+metrics:
+  first_occurrence: "2026-01-05"
+  last_occurrence: "2026-01-18"
+  total_occurrences: 6
+  prs_affected: 6
+  files_affected: 12
+  review_iterations_added: 1.2  # Average per PR
+  time_wasted_minutes: 72  # 6 PRs × 12 min avg
+
+resolution_effectiveness:
+  solution_applied: false
+  if_applied_projected_reduction: 0.90  # 90% reduction expected
+  prevention_success_rate: null  # Not yet implemented

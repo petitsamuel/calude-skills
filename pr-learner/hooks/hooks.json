@@ -1,0 +1,14 @@
+{
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "prompt",
+            "prompt": "When analyzing PRs, focus on identifying patterns that can be prevented through documentation, tooling, or process improvements. Prioritize actionable suggestions over observations."
+          }
+        ]
+      }
+    ]
+  }
+}

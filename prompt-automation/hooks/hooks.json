@@ -1,0 +1,22 @@
+{
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "prompt",
+            "prompt": "When designing Ralph Loop tasks, always create clear completion criteria, break complex tasks into phases, and include validation commands. Use the prompt-patterns skill for task-specific templates."
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "enabled": false,
+        "name": "Ralph Loop Continuation",
+        "description": "Intercepts exit attempts during Ralph Loop execution and re-injects the prompt to continue iteration",
+        "command": "./hooks/stop-loop.sh"
+      }
+    ]
+  }
+}
