@@ -24,10 +24,10 @@ Clone this repository to your Claude Code plugins directory:
 
 ```bash
 # Clone the repository
-git clone https://github.com/petitsamuel/calude-skills.git ~/.claude/plugins/claude-plugins
+git clone https://github.com/petitsamuel/claude-plugins.git ~/.claude/plugins/claude-plugins
 
 # Or if you prefer a different location, clone and symlink:
-git clone https://github.com/petitsamuel/calude-skills.git ~/dev/claude-plugins
+git clone https://github.com/petitsamuel/claude-plugins.git ~/dev/claude-plugins
 ln -s ~/dev/claude-plugins/codebase-audit ~/.claude/plugins/codebase-audit
 ln -s ~/dev/claude-plugins/prompt-automation ~/.claude/plugins/prompt-automation
 ln -s ~/dev/claude-plugins/pr-learner ~/.claude/plugins/pr-learner
@@ -40,9 +40,9 @@ Add to your Claude Code settings (`~/.claude/settings.json`):
 ```json
 {
   "plugins": [
-    "~/.claude/plugins/codebase-audit",
-    "~/.claude/plugins/prompt-automation",
-    "~/.claude/plugins/pr-learner"
+    "~/.claude/plugins/claude-plugins/codebase-audit",
+    "~/.claude/plugins/claude-plugins/prompt-automation",
+    "~/.claude/plugins/claude-plugins/pr-learner"
   ]
 }
 ```
@@ -300,8 +300,8 @@ Contributions are welcome! Please follow:
 
 ```bash
 # Clone the repository
-git clone https://github.com/petitsamuel/calude-skills.git
-cd calude-skills
+git clone https://github.com/petitsamuel/claude-plugins.git
+cd claude-plugins
 
 # Make your changes
 
@@ -331,8 +331,8 @@ MIT License - See [LICENSE](./LICENSE) file for details
 
 ## Support
 
-- **Issues** - [GitHub Issues](https://github.com/petitsamuel/calude-skills/issues)
-- **Discussions** - [GitHub Discussions](https://github.com/petitsamuel/calude-skills/discussions)
+- **Issues** - [GitHub Issues](https://github.com/petitsamuel/claude-plugins/issues)
+- **Discussions** - [GitHub Discussions](https://github.com/petitsamuel/claude-plugins/discussions)
 - **Documentation** - See individual plugin READMEs
 
 ---
