@@ -1,10 +1,6 @@
-# Claude Code Plugins - Complete Design Specification
+# Architecture
 
-**Date:** 2026-01-19
-**Status:** Final Design - Ready for Implementation
-**Plugins:** 3 (codebase-audit, prompt-automation, pr-learner)
-
----
+This document describes the architectural design of the three Claude Code plugins in this repository.
 
 ## Table of Contents
 
@@ -13,7 +9,6 @@
 3. [Plugin 2: Prompt Automation](#plugin-2-prompt-automation)
 4. [Plugin 3: PR Learner](#plugin-3-pr-learner)
 5. [Cross-Plugin Conventions](#cross-plugin-conventions)
-6. [Implementation Roadmap](#implementation-roadmap)
 
 ---
 
@@ -1339,72 +1334,14 @@ Minimal hooks only:
 
 ---
 
-## Implementation Roadmap
+## Contributing
 
-### Phase 1: Foundation (Week 1)
-- [ ] Create all directory structures
-- [ ] Write all plugin.json files
-- [ ] Create all README.md files
-- [ ] Set up hooks.json files
+When contributing to these plugins, please follow:
 
-### Phase 2: Codebase Audit (Week 2)
-- [ ] Implement audit-orchestrator agent
-- [ ] Implement 8 audit agents
-- [ ] Create report-generator skill
-- [ ] Build 5 audit commands
-- [ ] Test with sample projects
+1. **Naming Conventions** - See [NAMING_CONVENTIONS.md](./NAMING_CONVENTIONS.md)
+2. **Architecture Patterns** - Follow the patterns documented in this file
+3. **Directory Structure** - Maintain the established directory structure for each plugin
+4. **Agent Design** - Keep agents focused on single responsibilities
+5. **Testing** - Test your changes thoroughly
 
-### Phase 3: Prompt Automation (Week 3)
-- [ ] Implement 4 core agents
-- [ ] Create 8 task type templates
-- [ ] Build Ralph Loop stop hook
-- [ ] Implement 6 commands
-- [ ] Test with sample tasks
-
-### Phase 4: PR Learner (Week 4)
-- [ ] Implement pr-analysis-orchestrator
-- [ ] Implement 6 specialized agents
-- [ ] Create 5 comprehensive skills
-- [ ] Build pr-learn command
-- [ ] Test with real repositories
-
-### Phase 5: Integration & Testing (Week 5)
-- [ ] End-to-end testing all plugins
-- [ ] Cross-plugin workflow testing
-- [ ] Performance optimization
-- [ ] Bug fixes
-
-### Phase 6: Documentation & Launch (Week 6)
-- [ ] Complete user documentation
-- [ ] Video tutorials
-- [ ] Example workflows
-- [ ] Launch announcement
-
----
-
-## Success Metrics
-
-### Codebase Audit
-- ✅ Reduces manual audit time by 80%+
-- ✅ Catches 95%+ of common vulnerabilities
-- ✅ All findings include actionable remediation
-- ✅ Ready for CI/CD integration
-
-### Prompt Automation
-- ✅ Reduces prompt crafting time by 70%+
-- ✅ Increases task completion rate
-- ✅ Auto-validates work quality
-- ✅ Handles complex multi-step tasks
-
-### PR Learner
-- ✅ Identifies 10+ actionable improvements per 10 PRs
-- ✅ Reduces recurring review comments by 50%+
-- ✅ Improves team coding standards
-- ✅ Automates workflow improvements
-
----
-
-**Design Status:** Complete ✅
-**Plugins:** 3 (codebase-audit, prompt-automation, pr-learner)
-**Ready for Implementation:** Yes ✅
-**Next Step:** Begin scaffolding all three plugins
+For more details, see the [Contributing](./README.md#contributing) section in the main README.

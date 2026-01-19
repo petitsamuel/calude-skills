@@ -184,14 +184,42 @@ db.query(query, [userId]);
 
 ## Installation
 
-Add to your Claude Code settings:
+### Option 1: Install from Repository
 
-```json
+```bash
+# Clone the repository
+git clone https://github.com/petitsamuel/calude-skills.git ~/.claude/plugins/claude-plugins
+
+# Add to your Claude Code settings (~/.claude/settings.json)
 {
   "plugins": [
-    "/path/to/codebase-audit"
+    "~/.claude/plugins/claude-plugins/codebase-audit"
   ]
 }
+```
+
+### Option 2: Symlink Installation
+
+```bash
+# Clone anywhere
+git clone https://github.com/petitsamuel/calude-skills.git ~/dev/claude-plugins
+
+# Create symlink
+ln -s ~/dev/claude-plugins/codebase-audit ~/.claude/plugins/codebase-audit
+
+# Add to settings
+{
+  "plugins": [
+    "~/.claude/plugins/codebase-audit"
+  ]
+}
+```
+
+### Verify Installation
+
+```bash
+# Check if the plugin is loaded
+claude --help | grep audit
 ```
 
 ## Configuration
