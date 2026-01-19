@@ -1,4 +1,6 @@
-# Claude Code Plugins - Naming Conventions & Best Practices
+# Naming Conventions
+
+This document defines naming standards for contributing to the Claude Code plugins in this repository. Following these conventions ensures consistency and maintainability.
 
 ## Plugin Naming
 

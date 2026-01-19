@@ -245,12 +245,45 @@ Intercepts exit attempts during Ralph Loop:
 
 ## Installation
 
-```bash
-# This plugin should be in:
-# ~/.claude/plugins/prompt-automation/
+### Option 1: Install from Repository
 
-# Verify installation:
-ls -la ~/.claude/plugins/prompt-automation/.claude-plugin/plugin.json
+```bash
+# Clone the repository
+git clone https://github.com/YOUR_USERNAME/claude-plugins.git ~/.claude/plugins/claude-plugins
+
+# Add to your Claude Code settings (~/.claude/settings.json)
+{
+  "plugins": [
+    "~/.claude/plugins/claude-plugins/prompt-automation"
+  ]
+}
+```
+
+### Option 2: Symlink Installation
+
+```bash
+# Clone anywhere
+git clone https://github.com/YOUR_USERNAME/claude-plugins.git ~/dev/claude-plugins
+
+# Create symlink
+ln -s ~/dev/claude-plugins/prompt-automation ~/.claude/plugins/prompt-automation
+
+# Add to settings
+{
+  "plugins": [
+    "~/.claude/plugins/prompt-automation"
+  ]
+}
+```
+
+### Verify Installation
+
+```bash
+# Check if the plugin is loaded
+claude --help | grep ralph
+
+# Verify stop hook is executable (important for Ralph Loop)
+chmod +x ~/.claude/plugins/prompt-automation/hooks/stop-loop.sh
 ```
 
 ## Configuration

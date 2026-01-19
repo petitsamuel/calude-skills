@@ -171,6 +171,49 @@ Calculates impact scores for patterns to prioritize improvements objectively.
 ### trend-analyzer
 Analyzes pattern trends over time to identify emerging issues and improvements.
 
+## Installation
+
+### Option 1: Install from Repository
+
+```bash
+# Clone the repository
+git clone https://github.com/YOUR_USERNAME/claude-plugins.git ~/.claude/plugins/claude-plugins
+
+# Add to your Claude Code settings (~/.claude/settings.json)
+{
+  "plugins": [
+    "~/.claude/plugins/claude-plugins/pr-learner"
+  ]
+}
+```
+
+### Option 2: Symlink Installation
+
+```bash
+# Clone anywhere
+git clone https://github.com/YOUR_USERNAME/claude-plugins.git ~/dev/claude-plugins
+
+# Create symlink
+ln -s ~/dev/claude-plugins/pr-learner ~/.claude/plugins/pr-learner
+
+# Add to settings
+{
+  "plugins": [
+    "~/.claude/plugins/pr-learner"
+  ]
+}
+```
+
+### Verify Installation
+
+```bash
+# Check if the plugin is loaded
+claude --help | grep pr-learn
+
+# Verify GitHub CLI is installed
+gh --version
+```
+
 ## Requirements
 
 ### GitHub CLI
