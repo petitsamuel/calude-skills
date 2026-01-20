@@ -48,8 +48,8 @@ if [ "$ITERATION" -ge "$MAX_ITERATIONS" ]; then
   echo ""
   echo "✓ Ralph Loop completed: reached maximum iterations ($MAX_ITERATIONS)"
   echo ""
-  # Mark as inactive
-  sed -i '' 's/^active: true/active: false/' "$STATE_FILE"
+  # Mark as inactive (cross-platform sed)
+  sed 's/^active: true/active: false/' "$STATE_FILE" > "$STATE_FILE.tmp" && mv "$STATE_FILE.tmp" "$STATE_FILE"
   exit 0
 fi
 
@@ -58,14 +58,14 @@ if echo "$CLAUDE_OUTPUT" | grep -q "<promise>$COMPLETION_PROMISE</promise>"; the
   echo ""
   echo "✓ Ralph Loop completed: found completion promise <promise>$COMPLETION_PROMISE</promise>"
   echo ""
-  # Mark as inactive
-  sed -i '' 's/^active: true/active: false/' "$STATE_FILE"
+  # Mark as inactive (cross-platform sed)
+  sed 's/^active: true/active: false/' "$STATE_FILE" > "$STATE_FILE.tmp" && mv "$STATE_FILE.tmp" "$STATE_FILE"
   exit 0
 fi
 
-# Increment iteration count
+# Increment iteration count (cross-platform sed)
 NEXT_ITERATION=$((ITERATION + 1))
-sed -i '' "s/^iteration: $ITERATION/iteration: $NEXT_ITERATION/" "$STATE_FILE"
+sed "s/^iteration: $ITERATION/iteration: $NEXT_ITERATION/" "$STATE_FILE" > "$STATE_FILE.tmp" && mv "$STATE_FILE.tmp" "$STATE_FILE"
 
 # Extract the prompt (everything after the frontmatter)
 # The prompt starts after the closing --- of YAML frontmatter

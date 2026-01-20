@@ -77,8 +77,11 @@ if [ ! -f "$DESIGN_FILE" ]; then
 fi
 
 # Extract task info from DESIGN file
-TASK_NAME=$(grep -m1 "^# " "$DESIGN_FILE" | sed 's/^# //' || echo "Task")
-TASK_TYPE=$(grep -m1 "^\*\*Task Type\*\*:" "$DESIGN_FILE" | sed 's/^**Task Type**: //' || echo "Unknown")
+TASK_NAME=$(grep -m1 "^# " "$DESIGN_FILE" | sed 's/^# //')
+[ -z "$TASK_NAME" ] && TASK_NAME="Task"
+
+TASK_TYPE=$(grep -m1 "^\*\*Task Type\*\*:" "$DESIGN_FILE" | sed 's/^\*\*Task Type\*\*: *//')
+[ -z "$TASK_TYPE" ] && TASK_TYPE="Unknown"
 
 # Set default max iterations
 if [ -z "$MAX_ITERATIONS" ]; then
@@ -125,17 +128,15 @@ if [ -z "$COMPLETION_PROMISE" ]; then
     echo "🎯 Auto-generated completion promise: $COMPLETION_PROMISE"
 fi
 
-# Lock the DESIGN file
+# Lock the DESIGN file (cross-platform sed)
 if grep -q "^\*\*Status\*\*: Design Phase" "$DESIGN_FILE" 2>/dev/null; then
-    sed -i '' 's/^\*\*Status\*\*: Design Phase/**Status**: LOCKED ✅ - Ready for Implementation/' "$DESIGN_FILE"
+    sed 's/^\*\*Status\*\*: Design Phase/**Status**: LOCKED ✅ - Ready for Implementation/' "$DESIGN_FILE" > "$DESIGN_FILE.tmp" && mv "$DESIGN_FILE.tmp" "$DESIGN_FILE"
     echo "🔒 Locked design file"
 elif grep -q "^\*\*Status\*\*: LOCKED" "$DESIGN_FILE" 2>/dev/null; then
     echo "✓ Design file already locked"
 else
-    # Add status line if not present
-    sed -i '' '3a\
-**Status**: LOCKED ✅ - Ready for Implementation\
-' "$DESIGN_FILE"
+    # Add status line if not present (cross-platform approach)
+    awk 'NR==3{print "**Status**: LOCKED ✅ - Ready for Implementation"}1' "$DESIGN_FILE" > "$DESIGN_FILE.tmp" && mv "$DESIGN_FILE.tmp" "$DESIGN_FILE"
     echo "🔒 Added lock status to design file"
 fi
 

@@ -16,8 +16,8 @@ ITERATION=$(grep "^iteration:" "$STATE_FILE" | sed 's/iteration: *//')
 MAX_ITERATIONS=$(grep "^maxIterations:" "$STATE_FILE" | sed 's/maxIterations: *//')
 TASK_NAME=$(grep "^taskName:" "$STATE_FILE" | sed 's/taskName: *//')
 
-# Mark as inactive
-sed -i '' 's/^active: true/active: false/' "$STATE_FILE"
+# Mark as inactive (cross-platform sed)
+sed 's/^active: true/active: false/' "$STATE_FILE" > "$STATE_FILE.tmp" && mv "$STATE_FILE.tmp" "$STATE_FILE"
 
 echo ""
 echo "🛑 Cancelled Ralph Loop"
