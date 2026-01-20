@@ -6,6 +6,12 @@ args:
     description: Maximum number of iterations
     required: false
     default: 25
+  - name: design-file
+    description: Path to DESIGN file (auto-detects latest if not provided)
+    required: false
+run:
+  type: bash
+  command: ${CLAUDE_PLUGIN_ROOT}/scripts/setup-ralph-loop.sh
 ---
 
 # Ralph Task Execute Command
