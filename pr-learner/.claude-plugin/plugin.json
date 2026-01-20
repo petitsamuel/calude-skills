@@ -3,8 +3,8 @@
   "version": "1.0.0",
   "description": "Analyzes recent PRs to suggest improvements to skills, CLAUDE.md, commands, and workflows",
   "keywords": ["pr", "learning", "patterns", "optimization", "claude-md"],
-  "commands": "./commands/",
-  "agents": "./agents/",
-  "skills": "./skills/",
-  "hooks": "./hooks/hooks.json"
+  "author": {
+    "name": "Local",
+    "email": "local@example.com"
+  }
 }
