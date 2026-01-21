@@ -251,12 +251,14 @@ db.query(query, [userId]);
   "version": "1.0.0",
   "description": "Multi-dimensional codebase analysis",
   "keywords": ["audit", "security", "quality", "performance"],
-  "commands": "./commands/",
-  "agents": "./agents/",
-  "skills": "./skills/",
-  "hooks": "./hooks/hooks.json"
+  "author": {
+    "name": "Local",
+    "email": "local@example.com"
+  }
 }
 ```
+
+**Note:** Components (agents, commands, skills, hooks) are auto-discovered from the directory structure. Do not include path fields in plugin.json.
 
 ---
 
@@ -671,12 +673,14 @@ exit 1  # Block exit to continue loop
   "version": "1.0.0",
   "description": "Ralph Loop automation with intelligent prompt engineering",
   "keywords": ["ralph-loop", "automation", "prompt", "iteration"],
-  "commands": "./commands/",
-  "agents": "./agents/",
-  "skills": "./skills/",
-  "hooks": "./hooks/hooks.json"
+  "author": {
+    "name": "Local",
+    "email": "local@example.com"
+  }
 }
 ```
+
+**Note:** Components (agents, commands, skills, hooks) are auto-discovered from the directory structure. Do not include path fields in plugin.json.
 
 ---
 
@@ -1258,12 +1262,14 @@ Claude:
   "version": "1.0.0",
   "description": "Learn from PR patterns to improve workflows",
   "keywords": ["pr", "learning", "workflow", "improvement"],
-  "commands": "./commands/",
-  "agents": "./agents/",
-  "skills": "./skills/",
-  "hooks": "./hooks/hooks.json"
+  "author": {
+    "name": "Local",
+    "email": "local@example.com"
+  }
 }
 ```
+
+**Note:** Components (agents, commands, skills, hooks) are auto-discovered from the directory structure. Do not include path fields in plugin.json.
 
 ---
 

@@ -12,7 +12,7 @@
     ],
     "Stop": [
       {
-        "enabled": false,
+        "enabled": true,
         "name": "Ralph Loop Continuation",
         "description": "Intercepts exit attempts during Ralph Loop execution and re-injects the prompt to continue iteration",
         "command": "./hooks/stop-loop.sh"

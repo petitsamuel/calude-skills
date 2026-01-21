@@ -172,6 +172,143 @@ Output: <promise>COMPLETE</promise>
 [How to undo if needed]
 ```
 
+## Minimal Implementation Prompt Generation
+
+**IMPORTANT**: During Ralph Loop execution, generate a **minimal reference prompt** instead of a comprehensive implementation document.
+
+### Purpose
+
+The DESIGN document already contains all requirements, architecture, tasks, and acceptance criteria. The implementation prompt should be **short and focused** - just enough to guide execution without duplication.
+
+### Minimal Prompt Structure (Target: 50-80 lines)
+
+```markdown
+# Implementation Task: [Task Name]
+
+Implement the complete plan detailed in **DESIGN-[timestamp].md**.
+
+## Design Document Reference
+
+Read **DESIGN-[timestamp].md** for:
+- Complete requirements and architecture
+- Detailed implementation tasks breakdown
+- All acceptance criteria
+- Edge case handling strategies
+- Technology stack decisions
+
+## Validation Protocol
+
+**After each logical chunk of work:**
+1. Run relevant tests from DESIGN file
+2. Verify no regressions introduced
+3. Commit changes if tests pass
+
+**Before signaling completion:**
+1. **Run full validation suite:**
+   - Execute all test commands (check DESIGN file)
+   - Run build command (check DESIGN file)
+   - Run linting/type-checking (if applicable)
+   - Verify coverage meets threshold (if specified)
+
+2. **Verify ALL acceptance criteria met:**
+   - Review each criterion in DESIGN file
+   - Ensure every checkbox can be checked
+   - Validate edge cases are handled
+
+3. **Ensure git status clean:**
+   - All changes committed
+   - Meaningful commit messages
+   - No uncommitted work
+
+4. **Review implementation quality:**
+   - Code follows project patterns
+   - Tests are comprehensive
+   - Documentation is updated
+
+**If ANY validation fails:**
+- DO NOT signal completion
+- Identify the specific failure
+- Fix the issue
+- Re-run validation
+- Continue until all validations pass
+
+## Completion Signal
+
+Output this ONLY when ALL of the above validations pass:
+
+<promise>[COMPLETION_PROMISE]</promise>
+
+## Working Style
+
+- **Reference DESIGN file frequently** - it's your source of truth
+- **Work incrementally** - implement in small, testable chunks
+- **Test early and often** - catch issues immediately
+- **Self-correct** - if validation fails, fix and continue
+- **Use TodoWrite** - track progress through implementation phases
+- **Commit logically** - group related changes together
+- **Never skip validation** - always verify before signaling completion
+
+## Current Loop Status
+
+- Iteration: [CURRENT] / [MAX]
+- Design File: DESIGN-[timestamp].md
+- Completion Promise: <promise>[COMPLETION_PROMISE]</promise>
+- State File: .claude-task-state.json
+```
+
+### What NOT to Include
+
+❌ **DO NOT duplicate from DESIGN file:**
+- Detailed requirement lists
+- Architecture diagrams or descriptions
+- Step-by-step task breakdowns
+- Complete edge case catalogs
+- Acceptance criteria details
+- Technology stack justifications
+- File structure specifications
+
+✅ **DO include:**
+- Reference to DESIGN file
+- Clear validation protocol (when/how/what-if)
+- Completion promise format
+- Working style guidelines
+- Current loop status
+
+### Template Variables
+
+Replace these when generating:
+- `[Task Name]` - Extract from DESIGN file title
+- `[timestamp]` - Extract from DESIGN filename
+- `[COMPLETION_PROMISE]` - Generate based on task type:
+  - Feature development → `FEATURE_COMPLETE`
+  - Bug fix → `BUG_FIXED`
+  - Testing → `TESTS_COMPLETE`
+  - Performance → `OPTIMIZED`
+  - Refactoring → `REFACTORED`
+  - Security → `SECURITY_FIXED`
+  - Documentation → `DOCS_COMPLETE`
+  - API development → `API_COMPLETE`
+- `[CURRENT]` - Current iteration number from state
+- `[MAX]` - Max iterations from state
+
+### Size Guidelines
+
+- **Target**: 50-80 lines total
+- **Maximum**: 100 lines
+- **Minimum**: 40 lines
+
+A minimal prompt should be **~2-3% the size** of a comprehensive DESIGN document.
+
+**Example**:
+- DESIGN file: 1200 lines ✓
+- Implementation prompt: 50 lines ✓
+- Ratio: 4% ✓
+
+Not:
+- DESIGN file: 1200 lines
+- Implementation prompt: 1900 lines ✗
+- Ratio: 158% ✗ (This is duplication, not reference!)
+
 ## Best Practices
 
 1. **Be Specific**: Include exact names, paths, commands
@@ -181,3 +318,4 @@ Output: <promise>COMPLETE</promise>
 5. **Incremental**: Break into testable chunks
 6. **Error Handling**: Explicit requirements
 7. **Testing**: Always include test requirements
+8. **Minimal Prompts**: Reference DESIGN file, don't duplicate it

@@ -34,13 +34,19 @@ Sets up Ralph Loop execution:
 - Loads DESIGN-<timestamp>.md
 - Parses acceptance criteria
 - Extracts validation commands
-- Identifies completion promise
+- Identifies task type for completion promise
 
-**Prepares Implementation Prompt:**
-- Embeds design content
-- Adds reference to DESIGN file
-- Includes self-testing instructions
-- Sets completion conditions
+**Generates Minimal Implementation Prompt:**
+- Creates 50-80 line prompt that references DESIGN file
+- Includes explicit validation protocol (when/how/what-if)
+- Specifies completion promise format
+- Adds working style guidelines
+- **Does NOT duplicate design content** - references it instead
+- Stores prompt in state file for re-injection
+
+**Locks Design:**
+- Updates design file status to "LOCKED ✅"
+- Prevents further modifications during execution
 
 ### 2. Iteration Management
 
