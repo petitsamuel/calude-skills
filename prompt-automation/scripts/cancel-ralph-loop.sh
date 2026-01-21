@@ -11,13 +11,29 @@ if [ ! -f "$STATE_FILE" ]; then
     exit 0
 fi
 
-# Extract iteration and task info
-ITERATION=$(grep "^iteration:" "$STATE_FILE" | sed 's/iteration: *//')
-MAX_ITERATIONS=$(grep "^maxIterations:" "$STATE_FILE" | sed 's/maxIterations: *//')
-TASK_NAME=$(grep "^taskName:" "$STATE_FILE" | sed 's/taskName: *//')
+# Extract values from YAML frontmatter only (between --- markers)
+FRONTMATTER=$(awk '/^---$/{ if (++count == 2) exit } count == 1 && NR > 1' "$STATE_FILE")
 
-# Mark as inactive (cross-platform sed)
-sed 's/^active: true/active: false/' "$STATE_FILE" > "$STATE_FILE.tmp" && mv "$STATE_FILE.tmp" "$STATE_FILE"
+ITERATION=$(echo "$FRONTMATTER" | grep "^iteration:" | sed 's/iteration: *//' | sed 's/"//g')
+MAX_ITERATIONS=$(echo "$FRONTMATTER" | grep "^maxIterations:" | sed 's/maxIterations: *//' | sed 's/"//g')
+TASK_NAME=$(echo "$FRONTMATTER" | grep "^taskName:" | sed 's/taskName: *//' | sed 's/"//g')
+
+# Mark as inactive in frontmatter only (cross-platform approach)
+awk '/^---$/{
+  count++
+  print
+  if (count == 1) {
+    in_frontmatter=1
+  } else {
+    in_frontmatter=0
+  }
+  next
+}
+in_frontmatter && /^active: true$/ {
+  print "active: false"
+  next
+}
+{print}' "$STATE_FILE" > "$STATE_FILE.tmp" && mv "$STATE_FILE.tmp" "$STATE_FILE"
 
 echo ""
 echo "🛑 Cancelled Ralph Loop"

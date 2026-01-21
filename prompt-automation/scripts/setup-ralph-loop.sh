@@ -6,6 +6,101 @@ set -e
 
 RALPH_STATE_FILE=".claude/ralph-task.local.md"
 
+# Function to generate minimal implementation prompt
+generate_minimal_prompt() {
+  local TASK_NAME="$1"
+  local DESIGN_FILE="$2"
+  local COMPLETION_PROMISE="$3"
+
+  cat <<EOF
+# Implementation Task: $TASK_NAME
+
+Implement the complete plan detailed in **$DESIGN_FILE**.
+
+## Design Document Reference
+
+Read **$DESIGN_FILE** for:
+- Complete requirements and architecture
+- Detailed implementation tasks breakdown
+- All acceptance criteria
+- Edge case handling strategies
+- Technology stack decisions
+
+## Validation Protocol
+
+**After each logical chunk of work:**
+1. Run relevant tests from DESIGN file
+2. Verify no regressions introduced
+3. Commit changes if tests pass
+
+**Before signaling completion:**
+1. **Run full validation suite:**
+   - Execute all test commands (check DESIGN file)
+   - Run build command (check DESIGN file)
+   - Run linting/type-checking (if applicable)
+   - Verify coverage meets threshold (if specified)
+
+2. **Verify ALL acceptance criteria met:**
+   - Review each criterion in DESIGN file
+   - Ensure every checkbox can be checked
+   - Validate edge cases are handled
+
+3. **Ensure git status clean:**
+   - All changes committed
+   - Meaningful commit messages
+   - No uncommitted work
+
+4. **Review implementation quality:**
+   - Code follows project patterns
+   - Tests are comprehensive
+   - Documentation is updated
+
+**If ANY validation fails:**
+- DO NOT signal completion
+- Identify the specific failure
+- Fix the issue
+- Re-run validation
+- Continue until all validations pass
+
+## Completion Signal
+
+Output this ONLY when ALL of the above validations pass:
+
+<promise>$COMPLETION_PROMISE</promise>
+
+## Working Style
+
+- **Reference DESIGN file frequently** - it's your source of truth
+- **Work incrementally** - implement in small, testable chunks
+- **Test early and often** - catch issues immediately
+- **Self-correct** - if validation fails, fix and continue
+- **Use TodoWrite** - track progress through implementation phases
+- **Commit logically** - group related changes together
+- **Never skip validation** - always verify before signaling completion
+EOF
+}
+
+# Check if a Ralph Loop is already active
+if [ -f "$RALPH_STATE_FILE" ]; then
+    # Check if it's actually active
+    if grep -q "^active: true" "$RALPH_STATE_FILE" 2>/dev/null; then
+        # Extract iteration and task name from frontmatter
+        FRONTMATTER_CHECK=$(awk '/^---$/{ if (++count == 2) exit } count == 1 && NR > 1' "$RALPH_STATE_FILE")
+        CURRENT_ITERATION=$(echo "$FRONTMATTER_CHECK" | grep "^iteration:" | sed 's/iteration: *//' | sed 's/"//g')
+        CURRENT_TASK=$(echo "$FRONTMATTER_CHECK" | grep "^taskName:" | sed 's/taskName: *//' | sed 's/"//g')
+        echo ""
+        echo "❌ Error: A Ralph Loop is already active!"
+        echo "   Current task: $CURRENT_TASK"
+        echo "   Current iteration: $CURRENT_ITERATION"
+        echo ""
+        echo "Please cancel the active loop first with: /ralph-task-cancel"
+        echo "Or remove the state file: rm $RALPH_STATE_FILE"
+        echo ""
+        exit 1
+    fi
+    echo "⚠️  Found inactive loop state file, will overwrite..."
+fi
+
 # Parse arguments
 PROMPT=""
 MAX_ITERATIONS=""
@@ -88,9 +183,9 @@ if [ -z "$MAX_ITERATIONS" ]; then
     MAX_ITERATIONS=25
 fi
 
-# Validate max iterations is a number
-if ! [[ "$MAX_ITERATIONS" =~ ^[0-9]+$ ]]; then
-    echo "❌ Error: --max-iterations must be a positive integer"
+# Validate max iterations is a positive integer (must be > 0)
+if ! [[ "$MAX_ITERATIONS" =~ ^[1-9][0-9]*$ ]]; then
+    echo "❌ Error: --max-iterations must be a positive integer (greater than 0)"
     exit 1
 fi
 
@@ -140,92 +235,24 @@ else
     echo "🔒 Added lock status to design file"
 fi
 
-# Generate minimal implementation prompt
-MINIMAL_PROMPT=$(cat <<EOF
-# Implementation Task: $TASK_NAME
-
-Implement the complete plan detailed in **$DESIGN_FILE**.
-
-## Design Document Reference
-
-Read **$DESIGN_FILE** for:
-- Complete requirements and architecture
-- Detailed implementation tasks breakdown
-- All acceptance criteria
-- Edge case handling strategies
-- Technology stack decisions
-
-## Validation Protocol
-
-**After each logical chunk of work:**
-1. Run relevant tests from DESIGN file
-2. Verify no regressions introduced
-3. Commit changes if tests pass
-
-**Before signaling completion:**
-1. **Run full validation suite:**
-   - Execute all test commands (check DESIGN file)
-   - Run build command (check DESIGN file)
-   - Run linting/type-checking (if applicable)
-   - Verify coverage meets threshold (if specified)
-
-2. **Verify ALL acceptance criteria met:**
-   - Review each criterion in DESIGN file
-   - Ensure every checkbox can be checked
-   - Validate edge cases are handled
-
-3. **Ensure git status clean:**
-   - All changes committed
-   - Meaningful commit messages
-   - No uncommitted work
-
-4. **Review implementation quality:**
-   - Code follows project patterns
-   - Tests are comprehensive
-   - Documentation is updated
-
-**If ANY validation fails:**
-- DO NOT signal completion
-- Identify the specific failure
-- Fix the issue
-- Re-run validation
-- Continue until all validations pass
-
-## Completion Signal
-
-Output this ONLY when ALL of the above validations pass:
-
-<promise>$COMPLETION_PROMISE</promise>
-
-## Working Style
-
-- **Reference DESIGN file frequently** - it's your source of truth
-- **Work incrementally** - implement in small, testable chunks
-- **Test early and often** - catch issues immediately
-- **Self-correct** - if validation fails, fix and continue
-- **Use TodoWrite** - track progress through implementation phases
-- **Commit logically** - group related changes together
-- **Never skip validation** - always verify before signaling completion
-EOF
-)
-
 # Create .claude directory if it doesn't exist
 mkdir -p .claude
 
-# Create ralph state file with YAML frontmatter
+# Create ralph state file with YAML frontmatter (quote string values)
+TIMESTAMP=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
 cat > "$RALPH_STATE_FILE" << EOF
 ---
 active: true
 iteration: 0
 maxIterations: $MAX_ITERATIONS
-completionPromise: $COMPLETION_PROMISE
-designFile: $DESIGN_FILE
-taskName: $TASK_NAME
-taskType: $TASK_TYPE
-startedAt: $(date -u +"%Y-%m-%dT%H:%M:%SZ")
+completionPromise: "$COMPLETION_PROMISE"
+designFile: "$DESIGN_FILE"
+taskName: "$TASK_NAME"
+taskType: "$TASK_TYPE"
+startedAt: "$TIMESTAMP"
 ---
 
-$MINIMAL_PROMPT
+$(generate_minimal_prompt "$TASK_NAME" "$DESIGN_FILE" "$COMPLETION_PROMISE")
 EOF
 
 echo ""
@@ -254,7 +281,7 @@ echo ""
 # Output the prompt to start the loop
 cat << EOF
 
-$MINIMAL_PROMPT
+$(generate_minimal_prompt "$TASK_NAME" "$DESIGN_FILE" "$COMPLETION_PROMISE")
 
 ---
 

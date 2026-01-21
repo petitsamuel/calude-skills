@@ -26,7 +26,7 @@ Cancels the currently active Ralph Loop and reports the iteration it was on.
 ## Example Output
 
 If loop is active:
-```
+```text
 🛑 Cancelled Ralph Loop
    Was at iteration: 5 / 25
    Task: Add JWT Authentication
@@ -34,7 +34,7 @@ If loop is active:
 ```
 
 If no loop is active:
-```
+```text
 ℹ️  No active Ralph Loop found
 ```
 

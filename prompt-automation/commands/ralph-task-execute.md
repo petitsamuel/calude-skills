@@ -11,7 +11,7 @@ args:
     required: false
 run:
   type: bash
-  command: ${CLAUDE_PLUGIN_ROOT}/scripts/setup-ralph-loop.sh
+  command: ${CLAUDE_PLUGIN_ROOT}/scripts/setup-ralph-loop.sh ${max-iterations:+--max-iterations=$max-iterations} ${design-file:+--design-file=$design-file}
 ---
 
 # Ralph Task Execute Command
@@ -21,17 +21,23 @@ Locks the design and starts the Ralph Loop for autonomous implementation.
 ## Usage
 
 ```bash
-/ralph-task-execute [--max-iterations=<n>]
+/ralph-task-execute [--max-iterations=<n>] [--design-file=<path>]
 ```
 
 ## Examples
 
 ```bash
-# Default max iterations (25)
+# Default max iterations (25), auto-detect latest DESIGN file
 /ralph-task-execute
 
 # Custom max iterations
 /ralph-task-execute --max-iterations=30
+
+# Specify exact DESIGN file
+/ralph-task-execute --design-file=DESIGN-20260120-143022.md
+
+# Both custom iterations and specific file
+/ralph-task-execute --max-iterations=50 --design-file=DESIGN-20260120-143022.md
 
 # Lower max for simple tasks
 /ralph-task-execute --max-iterations=15
@@ -66,7 +72,7 @@ When this command is invoked, follow these steps **exactly**:
 
 Use the `prompt-engineer` agent to generate a **minimal prompt** (50-80 lines):
 
-```
+```text
 Invoke prompt-engineer agent with:
 - Mode: "minimal-prompt-generation"
 - Input: DESIGN-[timestamp].md
@@ -127,7 +133,7 @@ Update `hooks.json` to enable the Ralph Loop stop hook:
 
 Output the generated minimal prompt directly to the user, which starts iteration 1:
 
-```
+```text
 [The minimal prompt text from Step 2]
 
 ---
@@ -183,7 +189,7 @@ Update after each iteration (the stop hook does this).
 
 ### Max Iterations
 Hard stop after N iterations:
-```
+```text
 if currentIteration >= maxIterations:
   Report status
   Clean up state
@@ -192,7 +198,7 @@ if currentIteration >= maxIterations:
 
 ### Infinite Loop Detection
 If same error occurs 3+ times in a row:
-```
+```text
 - Report stuck state
 - Suggest manual intervention
 - Exit loop
