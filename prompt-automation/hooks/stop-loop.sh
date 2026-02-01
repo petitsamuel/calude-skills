@@ -4,6 +4,9 @@
 # This hook intercepts exit attempts and re-injects the prompt to continue the loop
 # It only activates when a Ralph Loop is active (detected via state file)
 
+# Enable pipefail to properly capture exit status in pipelines
+set -o pipefail
+
 STATE_FILE=".claude-task-state.json"
 
 # Check if Ralph Loop is active
@@ -30,20 +33,80 @@ fi
 MAX_ITERATIONS=$(echo "$LOOP_STATE" | grep -o '"max_iterations":[0-9]*' | cut -d':' -f2)
 CURRENT_ITERATION=$(echo "$LOOP_STATE" | grep -o '"current_iteration":[0-9]*' | cut -d':' -f2)
 
-# Check if we've hit max iterations
-if [ "$CURRENT_ITERATION" -ge "$MAX_ITERATIONS" ]; then
-  echo "✓ Ralph Loop completed: reached maximum iterations ($MAX_ITERATIONS)"
-  exit 0
-fi
-
 # Extract completion promise
 COMPLETION_PROMISE=$(echo "$LOOP_STATE" | grep -o '"completion_promise":"[^"]*"' | cut -d'"' -f4)
 
-# Check if completion promise was emitted
+# Extract validation commands (JSON array)
+VALIDATION_COMMANDS=$(echo "$LOOP_STATE" | grep -o '"validation_commands":\[[^]]*\]' | sed 's/"validation_commands"://')
+
+# Function to run validation checks
+run_validation() {
+  local validation_failed=0
+
+  echo "⏸️  Completion marker detected. Running validation..."
+  echo ""
+  echo "Validation Checks:"
+
+  # Check git status for uncommitted changes (both staged and unstaged)
+  if [ -n "$(git status --porcelain 2>/dev/null)" ]; then
+    echo "✗ Git status - uncommitted changes detected"
+    validation_failed=1
+  else
+    echo "✓ Git status - clean working directory"
+  fi
+
+  # Run custom validation commands if defined
+  if [ -n "$VALIDATION_COMMANDS" ] && [ "$VALIDATION_COMMANDS" != "null" ]; then
+    # Parse JSON array of commands - use process substitution to avoid subshell
+    while IFS= read -r cmd; do
+      cmd=$(echo "$cmd" | xargs)  # Trim whitespace
+      if [ -n "$cmd" ]; then
+        echo -n "  Running: $cmd ... "
+        # Capture exit status separately to handle pipefail correctly
+        local output
+        local exit_status
+        output=$(eval "$cmd" 2>&1)
+        exit_status=$?
+        if [ $exit_status -eq 0 ]; then
+          echo "✓"
+        else
+          echo "✗"
+          echo "    Output (last 5 lines):"
+          echo "$output" | tail -5 | sed 's/^/    /'
+          validation_failed=1
+        fi
+      fi
+    done < <(echo "$VALIDATION_COMMANDS" | tr -d '[]"' | tr ',' '\n')
+  fi
+
+  return $validation_failed
+}
+
+# Check if completion promise was emitted (check this BEFORE max iterations)
 if echo "$CLAUDE_OUTPUT" | grep -q "<promise>$COMPLETION_PROMISE</promise>"; then
-  echo "✓ Ralph Loop completed: found completion promise <promise>$COMPLETION_PROMISE</promise>"
-  # Update state to completed
-  echo "$LOOP_STATE" | sed 's/"status":"running"/"status":"completed"/' > "$STATE_FILE"
+  # Run validation before accepting completion
+  if run_validation; then
+    echo ""
+    echo "✓ Ralph Loop completed: all validation checks passed"
+    echo "  Completion promise: <promise>$COMPLETION_PROMISE</promise>"
+    # Update state to completed
+    echo "$LOOP_STATE" | sed 's/"status":"running"/"status":"completed"/' > "$STATE_FILE"
+    exit 0
+  else
+    echo ""
+    echo "⚠️  Completion promise found but validation failed"
+    echo "🔄 Continuing loop to fix remaining issues..."
+    # Don't exit - fall through to continue the loop
+  fi
+fi
+
+# Check max iterations AFTER completion promise validation
+# This ensures we always check for valid completion before hitting the limit
+if [ "$CURRENT_ITERATION" -ge "$MAX_ITERATIONS" ]; then
+  echo "⚠️  Ralph Loop reached maximum iterations ($MAX_ITERATIONS)"
+  echo "   Task may be incomplete. Review output and run /ralph-task-status"
+  # Update state to indicate max iterations reached
+  echo "$LOOP_STATE" | sed 's/"status":"running"/"status":"max_iterations"/' > "$STATE_FILE"
   exit 0
 fi
 
