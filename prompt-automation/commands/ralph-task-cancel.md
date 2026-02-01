@@ -1,11 +1,14 @@
 ---
 name: ralph-task-cancel
-description: Stop active loop gracefully
+description: Cancel active Ralph Loop
+run:
+  type: bash
+  command: ${CLAUDE_PLUGIN_ROOT}/scripts/cancel-ralph-loop.sh
 ---
 
 # Ralph Task Cancel Command
 
-Safely stops an active Ralph Loop.
+Cancels the currently active Ralph Loop and reports the iteration it was on.
 
 ## Usage
 
@@ -15,80 +18,39 @@ Safely stops an active Ralph Loop.
 
 ## What It Does
 
-1. **Stops Loop**
-   - Terminates the Ralph Loop
-   - Prevents next iteration
-   - Disables stop hook
-
-2. **Preserves Work**
-   - All file changes kept
-   - Git history preserved
-   - DESIGN file kept for reference
-
-3. **Cleanup**
-   - Deletes `.claude-task-state.json`
-   - Removes loop tracking
-
-4. **Reports Status**
-   - Shows iterations completed
-   - Lists what was accomplished
-   - Notes what remains incomplete
+1. **Checks for active loop** - Looks for `.claude/ralph-task.local.md`
+2. **Reports status** - Shows which iteration the loop was on
+3. **Deactivates loop** - Marks the state file as inactive
+4. **Allows exit** - Next exit attempt will succeed
 
 ## Example Output
 
-```
-🛑 Ralph Loop Cancelled
-
-Task: Build Todo API
-Iterations Completed: 12/25
-Status at Cancel: 5/7 acceptance criteria met
-
-Accomplished:
-✓ All CRUD endpoints implemented
-✓ JWT authentication working
-✓ Input validation in place
-✓ Unit tests passing (85% coverage)
-✓ Integration tests passing
-
-Remaining Work:
-✗ OpenAPI docs not yet generated
-✗ README not yet updated
-
-Files Modified:
-- src/api/todos.ts
-- src/middleware/auth.ts
-- src/models/todo.ts
-- tests/api/todos.test.ts
-- tests/integration/api.test.ts
-
-DESIGN file kept at: DESIGN-20260119-143022.md
-
-You can resume by:
-1. Reviewing DESIGN file for remaining work
-2. Completing manually
-3. Or starting new loop with /ralph-task-design
+If loop is active:
+```text
+🛑 Cancelled Ralph Loop
+   Was at iteration: 5 / 25
+   Task: Add JWT Authentication
+   State file marked as inactive
 ```
 
-## When To Cancel
-
-- Task taking too long
-- Stuck in infinite loop
-- Need to change direction
-- Found blocking issue
-- Want to continue manually
-
-## After Cancellation
-
-You can:
-- Complete remaining work manually
-- Start a new task design
-- Commit current progress
-- Review what was accomplished
-
-## No Active Task
-
-If no task is active:
-
+If no loop is active:
+```text
+ℹ️  No active Ralph Loop found
 ```
-No active Ralph Loop to cancel.
+
+## State File
+
+The command sets `active: false` in `.claude/ralph-task.local.md` which tells the stop hook to allow normal exit on the next attempt.
+
+## Note
+
+The state file is preserved after cancellation so you can review:
+- How many iterations were completed
+- What the task was
+- When it started
+- The implementation prompt that was being used
+
+To completely remove the state file:
+```bash
+rm .claude/ralph-task.local.md
 ```
